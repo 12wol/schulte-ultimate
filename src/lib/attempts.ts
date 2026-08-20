@@ -73,6 +73,30 @@ export async function fetchDailyStats(params: {
   return (data ?? []) as DailyStat[]
 }
 
+/** Recent attempts chronological (oldest → newest within the window) for attempt-based trends */
+export async function fetchRecentAttempts(params: {
+  userId: string
+  variantId: string
+  gridSize: number
+  limit: number
+}): Promise<TestAttempt[]> {
+  if (!supabase) return []
+  const { data, error } = await supabase
+    .from('test_attempts')
+    .select('*')
+    .eq('user_id', params.userId)
+    .eq('variant_id', params.variantId)
+    .eq('grid_size', params.gridSize)
+    .order('created_at', { ascending: false })
+    .limit(params.limit)
+
+  if (error) {
+    console.error(error)
+    return []
+  }
+  return ((data ?? []) as TestAttempt[]).slice().reverse()
+}
+
 export async function fetchLeaderboard(params: {
   variantId: string
   gridSize: number
