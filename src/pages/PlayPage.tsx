@@ -36,11 +36,10 @@ export function PlayPage() {
     if (!user) return
     setSaving(true)
     const { error } = await saveAttempt({
-      userId: user.id,
       variantId: 'schulte',
       gridSize: result.gridSize,
       durationMs: result.durationMs,
-      meta: { wrongClicks: result.wrongClicks },
+      meta: { wrongClicks: result.wrongClicks, clicks: result.clicks },
     })
     setSaving(false)
     if (error) {

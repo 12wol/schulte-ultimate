@@ -1,9 +1,8 @@
 import { supabase } from './supabase'
-import { localDay } from './format'
 import type { DailyStat, LeaderboardRow, TestAttempt } from '../types'
 
+/** 成绩只能走 submit_attempt；客户端对 test_attempts 没有 insert 权限 */
 export async function saveAttempt(input: {
-  userId: string
   variantId: string
   gridSize: number
   durationMs: number
@@ -11,17 +10,22 @@ export async function saveAttempt(input: {
 }): Promise<{ data: TestAttempt | null; error: string | null }> {
   if (!supabase) return { data: null, error: '未配置数据库' }
 
-  const payload = {
-    user_id: input.userId,
-    variant_id: input.variantId,
-    grid_size: input.gridSize,
-    duration_ms: input.durationMs,
-    played_on: localDay(),
-    meta: input.meta ?? {},
-  }
+  const { data, error } = await supabase.rpc('submit_attempt', {
+    p_variant_id: input.variantId,
+    p_grid_size: input.gridSize,
+    p_duration_ms: input.durationMs,
+    p_meta: input.meta ?? {},
+  })
 
-  const { data, error } = await supabase.from('test_attempts').insert(payload).select('*').single()
-  if (error) return { data: null, error: error.message }
+  if (error) {
+    if (/could not find the function/i.test(error.message)) {
+      return {
+        data: null,
+        error: '请先在 Supabase SQL Editor 依次执行 004、005 号 migration',
+      }
+    }
+    return { data: null, error: error.message }
+  }
   return { data: data as TestAttempt, error: null }
 }
 
@@ -105,88 +109,16 @@ export async function fetchLeaderboard(params: {
 }): Promise<LeaderboardRow[]> {
   if (!supabase) return []
 
-  let query = supabase
-    .from('test_attempts')
-    .select('user_id, duration_ms, played_on')
-    .eq('variant_id', params.variantId)
-    .eq('grid_size', params.gridSize)
+  const { data, error } = await supabase.rpc('fetch_leaderboard', {
+    p_variant_id: params.variantId,
+    p_grid_size: params.gridSize,
+    p_mode: params.mode,
+    p_metric: params.metric,
+  })
 
-  if (params.mode === 'today') {
-    query = query.eq('played_on', localDay())
-  }
-
-  const { data, error } = await query.order('duration_ms', { ascending: true }).limit(2000)
   if (error) {
     console.error(error)
     return []
   }
-
-  type Agg = {
-    user_id: string
-    display_name: string
-    best_ms: number
-    worst_ms: number
-    sum_ms: number
-    attempt_count: number
-    played_on?: string
-  }
-
-  const agg = new Map<string, Agg>()
-  for (const row of data ?? []) {
-    const userId = row.user_id as string
-    const duration = row.duration_ms as number
-    const existing = agg.get(userId)
-    if (!existing) {
-      agg.set(userId, {
-        user_id: userId,
-        display_name: '岛民',
-        best_ms: duration,
-        worst_ms: duration,
-        sum_ms: duration,
-        attempt_count: 1,
-        played_on: row.played_on as string,
-      })
-    } else {
-      existing.attempt_count += 1
-      existing.sum_ms += duration
-      if (duration < existing.best_ms) {
-        existing.best_ms = duration
-        existing.played_on = row.played_on as string
-      }
-      if (duration > existing.worst_ms) {
-        existing.worst_ms = duration
-      }
-    }
-  }
-
-  const ids = [...agg.keys()]
-  if (ids.length > 0) {
-    const { data: profiles } = await supabase
-      .from('profiles')
-      .select('id, display_name')
-      .in('id', ids)
-    for (const p of profiles ?? []) {
-      const row = agg.get(p.id as string)
-      if (row) row.display_name = (p.display_name as string) || '岛民'
-    }
-  }
-
-  const rows: LeaderboardRow[] = [...agg.values()].map((r) => ({
-    user_id: r.user_id,
-    display_name: r.display_name,
-    best_ms: r.best_ms,
-    avg_ms: Math.round(r.sum_ms / r.attempt_count),
-    worst_ms: r.worst_ms,
-    attempt_count: r.attempt_count,
-    played_on: r.played_on,
-  }))
-
-  const sorted =
-    params.metric === 'avg'
-      ? rows.sort((a, b) => a.avg_ms - b.avg_ms || a.best_ms - b.best_ms)
-      : params.metric === 'worst'
-        ? rows.sort((a, b) => b.worst_ms - a.worst_ms || b.avg_ms - a.avg_ms)
-        : rows.sort((a, b) => a.best_ms - b.best_ms || a.avg_ms - b.avg_ms)
-
-  return sorted.slice(0, 20)
+  return (data ?? []) as LeaderboardRow[]
 }

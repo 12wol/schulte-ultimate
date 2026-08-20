@@ -24,10 +24,16 @@ function buildToneMap(numbers: number[]): Record<number, number> {
   return map
 }
 
+export type SchulteClick = {
+  n: number
+  t: number
+}
+
 export type SchulteResult = {
   durationMs: number
   gridSize: number
   wrongClicks: number
+  clicks: SchulteClick[]
 }
 
 type Props = {
@@ -51,6 +57,7 @@ export function SchulteBoard({ gridSize, onFinished }: Props) {
   const [flashWrong, setFlashWrong] = useState<number | null>(null)
   const [boardPulse, setBoardPulse] = useState(false)
   const startedAt = useRef<number | null>(null)
+  const clicksRef = useRef<SchulteClick[]>([])
   const wrongRef = useRef(0)
   const raf = useRef<number | null>(null)
   const wrongTimer = useRef<number | null>(null)
@@ -75,6 +82,7 @@ export function SchulteBoard({ gridSize, onFinished }: Props) {
     setFlashWrong(null)
     setBoardPulse(false)
     startedAt.current = null
+    clicksRef.current = []
     setPhase('idle')
   }, [total])
 
@@ -106,14 +114,16 @@ export function SchulteBoard({ gridSize, onFinished }: Props) {
     if (phase !== 'running') return
 
     if (n === expect) {
+      const t = Math.round(performance.now() - (startedAt.current ?? performance.now()))
+      clicksRef.current = [...clicksRef.current, { n, t }]
       if (n === total) {
-        const durationMs = Math.round(performance.now() - (startedAt.current ?? performance.now()))
-        setElapsed(durationMs)
+        setElapsed(t)
         setPhase('done')
         onFinished({
-          durationMs,
+          durationMs: t,
           gridSize,
           wrongClicks: wrongRef.current,
+          clicks: clicksRef.current,
         })
         return
       }
