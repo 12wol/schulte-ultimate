@@ -1,0 +1,272 @@
+/* Soft pastel garden theme — reference: soft UI / layered paper */
+
+:root[data-theme='soft'] {
+  --soft-bg: #f7f4ef;
+  --soft-bg-2: #eef8f4;
+  --soft-ink: #4a5560;
+  --soft-muted: #8a939c;
+  --soft-mint: #7fd6c0;
+  --soft-mint-deep: #5fbfa8;
+  --soft-pink: #f0a8bc;
+  --soft-pink-soft: #f8d5df;
+  --soft-yellow: #f7e8b8;
+  --soft-lavender: #c9b8e8;
+  --soft-sky: #a8d4f0;
+  --soft-card: #fffdf9;
+  --soft-shadow: 0 10px 28px rgba(90, 110, 120, 0.1);
+  --soft-radius: 22px;
+  --soft-ease: cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+:root[data-theme='soft'] body {
+  color: var(--soft-ink);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(168, 212, 240, 0.35), transparent 40%),
+    radial-gradient(circle at 90% 8%, rgba(240, 168, 188, 0.28), transparent 38%),
+    linear-gradient(180deg, #fbf8f3 0%, #f0f7f4 55%, #eaf4ff 100%);
+  font-family: 'Nunito', 'Noto Sans SC', sans-serif;
+}
+
+:root[data-theme='soft'] .app-shell {
+  gap: 18px;
+}
+
+:root[data-theme='soft'] .app-header {
+  gap: 10px;
+}
+
+:root[data-theme='soft'] .soft-brand {
+  margin: 0;
+  font-size: clamp(1.45rem, 4vw, 1.9rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--soft-pink);
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.8);
+}
+
+:root[data-theme='soft'] .app-subtitle,
+:root[data-theme='soft'] .muted,
+:root[data-theme='soft'] .field-label,
+:root[data-theme='soft'] .auth-hint {
+  color: var(--soft-muted);
+}
+
+:root[data-theme='soft'] .app-nav {
+  gap: 10px;
+  padding: 10px;
+  border-radius: 28px;
+  background: rgba(255, 253, 249, 0.9);
+  border: 1.5px solid rgba(200, 184, 232, 0.45);
+  box-shadow: var(--soft-shadow);
+}
+
+:root[data-theme='soft'] .nav-pill {
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1.5px solid transparent;
+  color: var(--soft-ink);
+  background: transparent;
+  transition:
+    transform 0.18s var(--soft-ease),
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
+}
+
+:root[data-theme='soft'] .nav-pill:hover {
+  background: rgba(127, 214, 192, 0.18);
+  transform: translateY(-1px);
+}
+
+:root[data-theme='soft'] .nav-pill:active {
+  transform: scale(0.94);
+}
+
+:root[data-theme='soft'] .nav-pill.is-active {
+  background: var(--soft-mint);
+  border-color: var(--soft-mint-deep);
+  color: #fff;
+  box-shadow: 0 6px 0 rgba(95, 191, 168, 0.35);
+  transform: translateY(-2px);
+}
+
+:root[data-theme='soft'] .nav-pill.is-active:active {
+  transform: translateY(0) scale(0.96);
+  box-shadow: 0 2px 0 rgba(95, 191, 168, 0.35);
+}
+
+:root[data-theme='soft'] .soft-panel {
+  background: var(--soft-card);
+  border: 1.5px solid rgba(201, 184, 232, 0.35);
+  border-radius: var(--soft-radius);
+  box-shadow: var(--soft-shadow);
+  padding: 16px;
+}
+
+:root[data-theme='soft'] .soft-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1.5px solid var(--soft-sky);
+  background: #fff;
+  color: var(--soft-ink);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+:root[data-theme='soft'] .soft-chip.pink {
+  border-color: var(--soft-pink);
+  background: var(--soft-pink-soft);
+  color: #b05a72;
+}
+
+/* Soft overrides for animal-island surfaces when theme=soft */
+:root[data-theme='soft'] .page {
+  animation: soft-page-in 0.34s var(--soft-ease);
+}
+
+:root[data-theme='soft'] .page-enter {
+  animation: soft-page-in 0.34s var(--soft-ease);
+}
+
+@keyframes soft-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+:root[data-theme='soft'] button,
+:root[data-theme='soft'] .nav-pill,
+:root[data-theme='soft'] .theme-card,
+:root[data-theme='soft'] .schulte-cell {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root[data-theme='soft'] button:not(:disabled) {
+  transition:
+    transform 0.16s var(--soft-ease),
+    box-shadow 0.16s ease,
+    filter 0.16s ease !important;
+}
+
+:root[data-theme='soft'] button:not(:disabled):active {
+  transform: scale(0.95) !important;
+  filter: brightness(0.98);
+}
+
+:root[data-theme='soft'] .theme-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+:root[data-theme='soft'] .theme-card,
+.theme-card {
+  appearance: none;
+  width: 100%;
+  text-align: left;
+  border: 2px solid transparent;
+  border-radius: 20px;
+  padding: 14px;
+  cursor: pointer;
+  background: #fff;
+  color: inherit;
+  box-shadow: 0 8px 20px rgba(90, 110, 120, 0.08);
+  transition:
+    transform 0.18s var(--soft-ease, cubic-bezier(0.34, 1.2, 0.64, 1)),
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.theme-card:hover {
+  transform: translateY(-2px);
+}
+
+.theme-card:active {
+  transform: scale(0.97);
+}
+
+.theme-card.is-active {
+  border-color: var(--soft-mint, #7fd6c0);
+  box-shadow: 0 0 0 3px rgba(127, 214, 192, 0.28);
+}
+
+.theme-card-title {
+  margin: 0 0 4px;
+  font-weight: 800;
+}
+
+.theme-card-desc {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--soft-muted, #8a939c);
+}
+
+.theme-preview {
+  height: 44px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+}
+
+.theme-preview.island {
+  background: linear-gradient(135deg, #ffe08a, #19c8b9 55%, #7a5c3e);
+}
+
+.theme-preview.soft {
+  background: linear-gradient(135deg, #f8d5df, #7fd6c0 50%, #c9b8e8);
+}
+
+:root[data-theme='soft'] .soft-footer {
+  margin-top: 8px;
+  text-align: center;
+  color: var(--soft-muted);
+  font-size: 0.85rem;
+}
+
+:root[data-theme='soft'] .soft-footer-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--soft-mint);
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* Soft schulte cell press already handled; tint board frame */
+:root[data-theme='soft'] .schulte-grid {
+  padding: 8px;
+  border-radius: 24px;
+  background: rgba(255, 253, 249, 0.65);
+  border: 1.5px dashed rgba(201, 184, 232, 0.55);
+}
+
+:root[data-theme='soft'] .schulte-cell {
+  border-radius: 18px !important;
+  border-width: 2px !important;
+  border-color: rgba(201, 184, 232, 0.55) !important;
+  box-shadow: 0 5px 0 rgba(168, 180, 200, 0.25) !important;
+}
+
+:root[data-theme='soft'] .schulte-cell:active:not(:disabled) {
+  transform: translateY(3px) scale(0.93) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root[data-theme='soft'] .page,
+  :root[data-theme='soft'] .page-enter,
+  :root[data-theme='soft'] .nav-pill,
+  :root[data-theme='soft'] button {
+    animation: none !important;
+    transition: none !important;
+  }
+}

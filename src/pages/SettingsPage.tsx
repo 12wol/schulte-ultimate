@@ -9,10 +9,12 @@ import {
   Title,
 } from 'animal-island-ui'
 import { useAuth } from '../context/AuthContext'
+import { useTheme, type ThemeId } from '../theme/ThemeContext'
 import { GRID_SIZE_OPTIONS } from '../variants/registry'
 
 export function SettingsPage() {
   const { profile, updateProfile, signOut, unlockDeveloper, lockDeveloper } = useAuth()
+  const { theme, setTheme } = useTheme()
   const [name, setName] = useState(profile?.display_name ?? '')
   const [grid, setGrid] = useState(String(profile?.preferred_grid_size ?? 5))
   const [passcode, setPasscode] = useState('')
@@ -44,11 +46,42 @@ export function SettingsPage() {
     }
   }
 
+  const pickTheme = (next: ThemeId) => {
+    setTheme(next)
+    Notification.success(next === 'soft' ? '已切换柔和花园风格' : '已切换动森小岛风格')
+  }
+
   return (
     <div className="page">
       <Title size="middle" color="app-blue">
         小岛设置
       </Title>
+
+      <Card color="app-green">
+        <div className="auth-form">
+          <label className="field-label">界面主题</label>
+          <div className="theme-grid">
+            <button
+              type="button"
+              className={`theme-card${theme === 'island' ? ' is-active' : ''}`}
+              onClick={() => pickTheme('island')}
+            >
+              <div className="theme-preview island" />
+              <p className="theme-card-title">动森小岛</p>
+              <p className="theme-card-desc">Animal Island 原味 UI</p>
+            </button>
+            <button
+              type="button"
+              className={`theme-card${theme === 'soft' ? ' is-active' : ''}`}
+              onClick={() => pickTheme('soft')}
+            >
+              <div className="theme-preview soft" />
+              <p className="theme-card-title">柔和花园</p>
+              <p className="theme-card-desc">马卡龙软糖纸片风</p>
+            </button>
+          </div>
+        </div>
+      </Card>
 
       <Card color="app-yellow">
         <div className="auth-form">
