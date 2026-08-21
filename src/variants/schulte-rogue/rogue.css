@@ -1,0 +1,87 @@
+.rogue-page {
+  min-width: 0;
+}
+
+.rogue-hub {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rogue-back {
+  display: block;
+}
+
+.rogue-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.rogue-relic-line {
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+.rogue-offers {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+@media (min-width: 720px) {
+  .rogue-offers {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.rogue-offer {
+  appearance: none;
+  text-align: left;
+  border: 3px solid #e4dcc8;
+  border-radius: 18px;
+  background: #fffdf6;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #c4b89e;
+  font: inherit;
+  color: #794f27;
+  transition: transform 0.15s ease;
+}
+
+.rogue-offer:active {
+  transform: translateY(3px) scale(0.98);
+  box-shadow: 0 1px 0 #c4b89e;
+}
+
+.rogue-offer.rarity-rare {
+  border-color: #889df0;
+}
+
+.rogue-offer.rarity-epic {
+  border-color: #b77dee;
+}
+
+.rogue-offer__rarity {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #9f927d;
+}
+
+.rogue-offer__desc {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #8b7355;
+}
+
+.rogue-result-list {
+  margin: 0;
+  padding-left: 1.2em;
+  line-height: 1.7;
+  font-weight: 600;
+}

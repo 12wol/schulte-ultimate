@@ -14,6 +14,7 @@ import { HistoryPage } from '../../pages/HistoryPage'
 import { HomePage } from '../../pages/HomePage'
 import { LeaderboardPage } from '../../pages/LeaderboardPage'
 import { PlayPage } from '../../pages/PlayPage'
+import { RoguePage } from '../../pages/RoguePage'
 import { SettingsPage } from '../../pages/SettingsPage'
 import { TodayPage } from '../../pages/TodayPage'
 import { TrendsPage } from '../../pages/TrendsPage'
@@ -220,6 +221,7 @@ export function IrisRouteOutlet() {
     <Routes location={displayLocation}>
       <Route path="/" element={<HomePage />} />
       <Route path="/play" element={<PlayPage />} />
+      <Route path="/rogue" element={<RoguePage />} />
       <Route path="/today" element={<TodayPage />} />
       <Route path="/trends" element={<TrendsPage />} />
       <Route path="/history" element={<HistoryPage />} />

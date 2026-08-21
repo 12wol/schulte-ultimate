@@ -15,6 +15,7 @@ type NavApp = {
 const APPS: NavApp[] = [
   { to: '/', label: '小岛', icon: 'icon-map', color: '#82D5BB', end: true },
   { to: '/play', label: '方格测试', icon: 'icon-diy', color: '#E59266' },
+  { to: '/rogue', label: '方格远征', icon: 'icon-variant', color: '#F7CD67' },
   { to: '/today', label: '今日', icon: 'icon-miles', color: '#889DF0' },
   { to: '/trends', label: '趋势', icon: 'icon-critterpedia', color: '#F7CD67' },
   { to: '/history', label: '历史', icon: 'icon-camera', color: '#B77DEE' },

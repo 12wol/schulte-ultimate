@@ -86,18 +86,14 @@ export function HomePage() {
             <div className="variant-row">
               <div>
                 <strong>{v.name}</strong>
-                <p className="muted">
-                  {v.status === 'live'
-                    ? '按顺序点格子，越快越厉害！'
-                    : '还在装修中，过几天再来看看～'}
-                </p>
+                <p className="muted">{v.description}</p>
               </div>
               <Tag color={v.status === 'live' ? 'app-green' : 'app-orange'}>
                 {v.status === 'live' ? '开放中' : '装修中'}
               </Tag>
             </div>
             {v.status === 'live' && (
-              <Link to={`/play?variant=${v.id}`}>
+              <Link to={v.href ?? `/play?variant=${v.id}`}>
                 <Button type="primary" block>
                   进去玩
                 </Button>

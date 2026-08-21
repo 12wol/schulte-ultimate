@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { Navigate, useSearchParams } from 'react-router-dom'
 import { Card, Notification, Select, Title } from 'animal-island-ui'
 import { useAuth } from '../context/AuthContext'
 import { saveAttempt } from '../lib/attempts'
@@ -7,6 +7,7 @@ import { writeLog } from '../lib/logger'
 import { formatDuration } from '../lib/format'
 import { GRID_SIZE_OPTIONS, getVariant } from '../variants/registry'
 import { SchulteBoard, type SchulteResult } from '../variants/schulte/SchulteBoard'
+import { ROGUE_VARIANT_ID } from '../variants/schulte-rogue/content'
 
 export function PlayPage() {
   const { user, profile } = useAuth()
@@ -30,6 +31,10 @@ export function PlayPage() {
     () => GRID_SIZE_OPTIONS.map((n) => ({ key: String(n), label: `${n} × ${n}` })),
     [],
   )
+
+  if (variantId === ROGUE_VARIANT_ID || variant?.href === '/rogue') {
+    return <Navigate to="/rogue" replace />
+  }
 
   const onFinished = async (result: SchulteResult) => {
     setLast(result)
