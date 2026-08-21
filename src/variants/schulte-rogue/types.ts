@@ -12,16 +12,23 @@ export type RogueModifiers = {
   reshuffleEvery: number | null
   /** 层时限加减（秒） */
   timerDeltaSec: number
-  /** 开局额外专注（仅在获得遗物时结算，不进修饰器战斗） */
+  /** 点对后格子消失（行囊；默认不消失） */
+  vanishCleared: boolean
+  /** 开局自动按顺序消掉前 N 个数（行囊） */
+  autoClearCount: number
 }
 
 export type RelicRarity = 'common' | 'rare' | 'epic'
+
+/** 遗物倾向：增益带代价、减益有补偿、险注自担风险 */
+export type RelicKind = 'buff' | 'debuff' | 'risk'
 
 export type RelicDef = {
   id: string
   name: string
   description: string
   rarity: RelicRarity
+  kind: RelicKind
   /** 应用到修饰器 */
   apply: (m: RogueModifiers) => void
   /** 获得时立刻改专注（可正可负） */
@@ -39,6 +46,10 @@ export type LayerDef = {
   baseTimeSec: number
   /** 选卡时稀有权重加成 */
   rareWeightBonus: number
+  /** 本层固定规则干扰（与遗物叠加；八层阶段最高 6×6，不加 7/8） */
+  layerMods?: Partial<RogueModifiers>
+  /** 给玩家看的本层提示 */
+  hint?: string
 }
 
 export type RogueRunResult = {
@@ -59,5 +70,7 @@ export function emptyModifiers(): RogueModifiers {
     loudColors: false,
     reshuffleEvery: null,
     timerDeltaSec: 0,
+    vanishCleared: false,
+    autoClearCount: 0,
   }
 }

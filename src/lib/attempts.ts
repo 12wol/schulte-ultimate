@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { DailyStat, LeaderboardRow, TestAttempt } from '../types'
+import type { DailyStat, LeaderboardRow, RogueLeaderboardRow, TestAttempt } from '../types'
 
 /** 成绩只能走 submit_attempt；客户端对 test_attempts 没有 insert 权限 */
 export async function saveAttempt(input: {
@@ -121,6 +121,25 @@ export async function fetchLeaderboard(params: {
     return []
   }
   return (data ?? []) as LeaderboardRow[]
+}
+
+/** 方格远征排行：最远层 / 通关速度 / 平均层数 */
+export async function fetchRogueLeaderboard(params: {
+  mode: 'today' | 'all'
+  metric: 'depth' | 'clear' | 'avg'
+}): Promise<RogueLeaderboardRow[]> {
+  if (!supabase) return []
+
+  const { data, error } = await supabase.rpc('fetch_rogue_leaderboard', {
+    p_mode: params.mode,
+    p_metric: params.metric,
+  })
+
+  if (error) {
+    console.error(error)
+    return []
+  }
+  return (data ?? []) as RogueLeaderboardRow[]
 }
 
 /** 今日最佳榜第一名；展示名优先昵称，否则用户名 */

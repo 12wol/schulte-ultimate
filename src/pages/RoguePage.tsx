@@ -7,14 +7,15 @@ import { formatDuration } from '../lib/format'
 import { SchulteBoard, type SchulteResult } from '../variants/schulte/SchulteBoard'
 import {
   ROGUE_LAYERS,
+  ROGUE_LEADERBOARD_GRID,
   ROGUE_VARIANT_ID,
   START_FOCUS,
   buildModifiers,
   getRelic,
   hasGamblerDice,
+  mergeLayerModifiers,
   npcResultLine,
   rollRelicChoices,
-  withBossPack,
 } from '../variants/schulte-rogue/content'
 import type { RelicDef, RogueRunResult } from '../variants/schulte-rogue/types'
 import '../variants/schulte-rogue/rogue.css'
@@ -53,12 +54,12 @@ export function RoguePage() {
 
   const layer = ROGUE_LAYERS[layerIdx]!
   const modifiers = useMemo(() => {
-    const base = buildModifiers(relics)
-    return layer.kind === 'boss' ? withBossPack(base) : base
-  }, [relics, layer.kind])
+    return mergeLayerModifiers(buildModifiers(relics), layer)
+  }, [relics, layer])
 
   const timeLimitMs = useMemo(() => {
-    const sec = Math.max(15, layer.baseTimeSec + modifiers.timerDeltaSec)
+    // 地板 8s：稀有增益的时限税（−8/−10）在前几层仍能生效，不被 15s 吃掉
+    const sec = Math.max(8, layer.baseTimeSec + modifiers.timerDeltaSec)
     return sec * 1000
   }, [layer.baseTimeSec, modifiers.timerDeltaSec])
 
@@ -84,8 +85,8 @@ export function RoguePage() {
       setSaving(true)
       const { error } = await saveAttempt({
         variantId: ROGUE_VARIANT_ID,
-        gridSize: ROGUE_LAYERS[Math.min(layersCleared, ROGUE_LAYERS.length) - 1]?.gridSize ?? 5,
-        durationMs: Math.max(durationMs, 1),
+        gridSize: ROGUE_LEADERBOARD_GRID,
+        durationMs: Math.max(durationMs, 1000),
         meta: {
           mode: 'rogue',
           won: payload.won,
@@ -100,8 +101,10 @@ export function RoguePage() {
       if (error) {
         Notification.error(
           /variant|enabled|test_variants/i.test(error)
-            ? '远征结算未入库：请先在 Supabase 执行 006 号 migration'
-            : `结算保存失败：${error}`,
+            ? '远征结算未入库：请先在 Supabase 执行 006、007 号 migration'
+            : /点击序列|click/i.test(error)
+              ? '远征结算未入库：请先在 Supabase 执行 007 号 migration（肉鸽专用入库）'
+              : `结算保存失败：${error}`,
         )
         return
       }
@@ -181,10 +184,14 @@ export function RoguePage() {
     const nextRelics = [...relicsRef.current, relic.id]
     relicsRef.current = nextRelics
     setRelics(nextRelics)
-    if (relic.focusOnPickup) {
-      const healed = focusRef.current + relic.focusOnPickup
-      focusRef.current = healed
-      setFocus(healed)
+    if (relic.focusOnPickup != null) {
+      const nextFocus = Math.max(0, focusRef.current + relic.focusOnPickup)
+      focusRef.current = nextFocus
+      setFocus(nextFocus)
+      if (nextFocus <= 0) {
+        void endRun(false, layerIdx + 1, 0)
+        return
+      }
     }
     setLayerIdx((i) => i + 1)
     setBoardKey((k) => k + 1)
@@ -199,15 +206,15 @@ export function RoguePage() {
 
   return (
     <div className="page rogue-page">
-      <Title size="middle" color="app-orange">
+      <Title size="middle" color="app-green">
         方格远征
       </Title>
       <p className="muted">
-        八层山林，时限催着走，专注力是你的命。第一版先不比榜，走多远算多远～
+        八层山林，时限催着走，专注力是你的命。走完可上远征专榜（最远层 / 通关速度）。
       </p>
 
       {phase === 'hub' && (
-        <Card color="app-yellow" pattern="app-yellow">
+        <Card color="lime-green" pattern="lime-green">
           <div className="rogue-hub">
             <p>
               开局专注 <strong>{START_FOCUS}</strong> 点。超时或点错会掉专注；掉光就结束。
@@ -216,6 +223,9 @@ export function RoguePage() {
             <Button type="primary" size="large" block onClick={startRun}>
               出发远征
             </Button>
+            <Link to="/leaderboard?board=rogue" className="rogue-back">
+              <Button block>看远征排行榜</Button>
+            </Link>
             <Link to="/play" className="rogue-back">
               <Button block>回经典方格</Button>
             </Link>
@@ -229,7 +239,7 @@ export function RoguePage() {
             专注 {'♥'.repeat(Math.max(0, focus))}
             {focus === 0 ? '（见底）' : ''}
           </Tag>
-          <Tag color="app-blue" size="large">
+          <Tag color="brown" size="large">
             第 {layer.index}/8 · {layer.label}
           </Tag>
           <Tag
@@ -242,7 +252,8 @@ export function RoguePage() {
       )}
 
       {phase === 'battle' && (
-        <Card color="app-blue" pattern="app-blue">
+        <Card color="app-green" pattern="app-green">
+          {layer.hint && <p className="rogue-relic-line muted">{layer.hint}</p>}
           {relics.length > 0 && (
             <p className="rogue-relic-line muted">
               行囊：{relics.map((id) => getRelic(id)?.name ?? id).join('、')}
@@ -263,7 +274,7 @@ export function RoguePage() {
       )}
 
       {phase === 'retry' && (
-        <Card color="app-orange">
+        <Card color="app-orange" pattern="app-orange">
           <div className="rogue-hub">
             <Title size="small" color="app-orange">
               沙漏见底啦
@@ -280,7 +291,7 @@ export function RoguePage() {
       )}
 
       {phase === 'pick' && (
-        <Card color="app-green" pattern="app-green">
+        <Card color="yellow-green" pattern="yellow-green">
           <Title size="small" color="app-green">
             路边三件宝贝，挑一个吧
           </Title>
@@ -289,11 +300,13 @@ export function RoguePage() {
               <button
                 key={r.id}
                 type="button"
-                className={`rogue-offer rarity-${r.rarity}`}
+                className={`rogue-offer rarity-${r.rarity} kind-${r.kind}`}
                 onClick={() => pickRelic(r)}
               >
                 <strong>{r.name}</strong>
                 <span className="rogue-offer__rarity">
+                  {r.kind === 'buff' ? '增益' : r.kind === 'debuff' ? '减益' : '险注'}
+                  {' · '}
                   {r.rarity === 'common' ? '普通' : r.rarity === 'rare' ? '稀有' : '史诗'}
                 </span>
                 <span className="rogue-offer__desc">{r.description}</span>
@@ -304,14 +317,23 @@ export function RoguePage() {
       )}
 
       {phase === 'result' && result && (
-        <Card color={result.won ? 'app-green' : 'brown'}>
+        <Card
+          color={result.won ? 'app-green' : 'brown'}
+          pattern={result.won ? 'app-green' : 'brown'}
+        >
           <div className="rogue-hub">
             <Title size="small" color={result.won ? 'app-green' : 'app-orange'}>
               {result.won ? '通关！' : '远征结束'}
             </Title>
             <p>{npcResultLine(result.won, result.layersCleared)}</p>
             <ul className="rogue-result-list">
-              <li>到达：第 {result.layersCleared} 层</li>
+              <li>
+                {result.won
+                  ? `通关：清关 ${result.layersCleared} 层`
+                  : result.layersCleared <= 0
+                    ? '清关 0 层（倒下在第 1 层）'
+                    : `清关 ${result.layersCleared} 层（倒下在第 ${Math.min(result.layersCleared + 1, 8)} 层）`}
+              </li>
               <li>总用时：{formatDuration(result.durationMs)}</li>
               <li>误点：{result.totalWrong}</li>
               <li>剩余专注：{result.focusLeft}</li>
@@ -326,6 +348,9 @@ export function RoguePage() {
             <Button type="primary" size="large" block onClick={startRun}>
               再走一趟
             </Button>
+            <Link to="/leaderboard?board=rogue" className="rogue-back">
+              <Button block>看远征排行榜</Button>
+            </Link>
             <Link to="/" className="rogue-back">
               <Button block>回小岛</Button>
             </Link>

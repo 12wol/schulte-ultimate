@@ -78,6 +78,8 @@ export function SchulteBoard({
   const fog = Boolean(modifiers?.fog)
   const loudColors = Boolean(modifiers?.loudColors)
   const reshuffleEvery = modifiers?.reshuffleEvery ?? null
+  const vanishCleared = Boolean(modifiers?.vanishCleared)
+  const autoClearCount = Math.max(0, modifiers?.autoClearCount ?? 0)
   const toneCount = loudColors ? LOUD_TONE_COUNT : TONE_COUNT
 
   const total = gridSize * gridSize
@@ -99,6 +101,7 @@ export function SchulteBoard({
   const [flashWrong, setFlashWrong] = useState<number | null>(null)
   const [boardPulse, setBoardPulse] = useState(false)
   const [cleared, setCleared] = useState<Set<number>>(() => new Set())
+  const [autoCleared, setAutoCleared] = useState<Set<number>>(() => new Set())
 
   const startedAt = useRef<number | null>(null)
   const clicksRef = useRef<SchulteClick[]>([])
@@ -132,6 +135,7 @@ export function SchulteBoard({
     setFlashWrong(null)
     setBoardPulse(false)
     setCleared(new Set())
+    setAutoCleared(new Set())
     startedAt.current = null
     clicksRef.current = []
     setPhase('idle')
@@ -142,10 +146,32 @@ export function SchulteBoard({
   }, [gridSize, resetBoard])
 
   const beginRun = useCallback(() => {
-    resetBoard()
+    clearTimers()
+    const nextCells = shuffle(Array.from({ length: total }, (_, i) => i + 1))
+    setCells(nextCells)
+    setToneMap(buildToneMap(nextCells, toneCount))
+    setElapsed(0)
+    setWrong(0)
+    wrongRef.current = 0
+    correctStreak.current = 0
+    timedOutRef.current = false
+    setFlashWrong(null)
+    setBoardPulse(false)
+    clicksRef.current = []
+
+    const pre = new Set<number>()
+    let nextExpect = reverse ? total : 1
+    const autoN = Math.min(autoClearCount, Math.max(0, total - 1))
+    for (let i = 0; i < autoN; i += 1) {
+      pre.add(nextExpect)
+      nextExpect = reverse ? nextExpect - 1 : nextExpect + 1
+    }
+    setAutoCleared(new Set(pre))
+    setCleared(new Set(pre))
+    setExpect(nextExpect)
     startedAt.current = performance.now()
     setPhase('running')
-  }, [resetBoard])
+  }, [total, reverse, toneCount, autoClearCount])
 
   useEffect(() => {
     if (!autoStart) return
@@ -278,7 +304,10 @@ export function SchulteBoard({
       >
         {cells.map((n, cellIndex) => {
           const isHint = hintNext && phase === 'running' && n === expect
-          const isFogged = fog && phase === 'running' && !cleared.has(n) && n !== expect
+          // 迷雾下已点过的格也不变亮，避免桌面被「亮块」标进度
+          const isFogged = fog && phase === 'running' && n !== expect
+          const isVanished =
+            cleared.has(n) && (vanishCleared || autoCleared.has(n))
           return (
             <button
               key={`c-${cellIndex}-${n}`}
@@ -290,12 +319,12 @@ export function SchulteBoard({
                 flashWrong === n ? 'is-wrong' : '',
                 isHint ? 'is-hint' : '',
                 isFogged ? 'is-fogged' : '',
-                cleared.has(n) ? 'is-cleared' : '',
+                isVanished ? 'is-cleared' : '',
               ]
                 .filter(Boolean)
                 .join(' ')}
               onClick={() => onCell(n)}
-              disabled={phase === 'done' || cleared.has(n)}
+              disabled={phase === 'done' || isVanished}
             >
               {n}
             </button>
