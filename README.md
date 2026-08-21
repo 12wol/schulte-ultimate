@@ -8,17 +8,19 @@
 
 1. 打开 [supabase.com](https://supabase.com) 新建项目  
 2. **Project Settings → API**：复制 `Project URL` 与 `anon` `public` key  
-3. **SQL Editor**：粘贴并执行 `supabase/migrations/001_init.sql`  
+3. **SQL Editor**：依次粘贴并执行 `supabase/migrations/` 下的 `001_init.sql`、`002_username_login.sql`、`003_fix_app_logs_rls.sql`、`004_secure_attempt_submit.sql`、`005_leaderboard_rpc_and_quotas.sql`  
 4. **Authentication → Providers → Email**  
    - **必须关掉 Confirm email**（不要邮箱验证）  
-5. 若你之前已执行过 `001_init.sql`，再执行一次 `002_username_login.sql`（用户名登录）
+5. 若项目已在跑：按序号补执行尚未跑过的 migration。线上库请执行 `004` 与 `005`（禁止直接写成绩、排行榜只出聚合）
 
 登录方式为 **用户名 + 密码**（用户名全局唯一，3～20 位英文/数字/下划线），不需要真实邮箱。
 
-默认开发者口令（可在 SQL 里改 `app_config.developer_passcode`）：
+开发者口令存在表 `app_config`（key = `developer_passcode`），**不要写进 README**。执行 `005` 后会作废仓库里旧的默认口令，并清掉已解锁的开发者标记；请立刻在 SQL Editor 改成只有你知道的值：
 
-```text
-island-dev-2026
+```sql
+update public.app_config
+set value = '你自己的口令'
+where key = 'developer_passcode';
 ```
 
 ### 2. 环境变量
