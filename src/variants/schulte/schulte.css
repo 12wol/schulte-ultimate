@@ -137,9 +137,38 @@
   }
 }
 
+.schulte-cell.is-hint {
+  z-index: 2;
+  box-shadow:
+    0 0 0 3px rgba(25, 200, 185, 0.55),
+    0 4px 0 rgba(122, 92, 62, 0.28);
+  animation: schulte-hint-breathe 1.2s ease-in-out infinite;
+}
+
+.schulte-cell.is-fogged {
+  filter: brightness(0.55) saturate(0.7);
+}
+
+.schulte-cell.is-cleared {
+  opacity: 0.35;
+  filter: grayscale(0.4);
+  pointer-events: none;
+}
+
+@keyframes schulte-hint-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .schulte-cell.is-wrong,
-  .schulte-grid.is-pulse-bad {
+  .schulte-grid.is-pulse-bad,
+  .schulte-cell.is-hint {
     animation: none;
   }
 }

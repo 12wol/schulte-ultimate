@@ -1,0 +1,124 @@
+/* 远征页：林地氛围（UI 库 pattern 只有色点底纹，无海洋/森林场景图） */
+.rogue-page {
+  min-width: 0;
+  position: relative;
+}
+
+/* 盖过全局偏青绿「海感」底，仅本路由生效 */
+body:has(.rogue-page) {
+  background:
+    radial-gradient(circle at 14% 10%, rgba(210, 232, 150, 0.5), transparent 40%),
+    radial-gradient(circle at 88% 6%, rgba(196, 168, 120, 0.32), transparent 38%),
+    radial-gradient(circle at 50% 100%, rgba(110, 150, 90, 0.2), transparent 48%),
+    linear-gradient(180deg, #f3efdf 0%, #e4ebcf 46%, #cfdcb8 100%);
+}
+
+.rogue-hub {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rogue-back {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.rogue-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.rogue-relic-line {
+  margin: 0 0 12px;
+  text-align: center;
+}
+
+.rogue-offers {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+@media (min-width: 720px) {
+  .rogue-offers {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.rogue-offer {
+  appearance: none;
+  text-align: left;
+  border: 3px solid #e4dcc8;
+  border-radius: 18px;
+  background: #fffdf6;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #c4b89e;
+  font: inherit;
+  color: #794f27;
+  transition: transform 0.15s ease;
+}
+
+.rogue-offer:active {
+  transform: translateY(3px) scale(0.98);
+  box-shadow: 0 1px 0 #c4b89e;
+}
+
+.rogue-offer.rarity-rare {
+  border-color: #889df0;
+}
+
+.rogue-offer.rarity-epic {
+  border-color: #b77dee;
+}
+
+.rogue-offer.kind-buff {
+  background: linear-gradient(180deg, #fffdf6 0%, #f3faf4 100%);
+}
+
+.rogue-offer.kind-debuff {
+  background: linear-gradient(180deg, #fffdf6 0%, #fbf3ea 100%);
+}
+
+.rogue-offer.kind-risk {
+  background: linear-gradient(180deg, #fffdf6 0%, #f8eef5 100%);
+}
+
+.rogue-offer__rarity {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #9f927d;
+}
+
+.rogue-offer.kind-buff .rogue-offer__rarity {
+  color: #3d8f6a;
+}
+
+.rogue-offer.kind-debuff .rogue-offer__rarity {
+  color: #c46b3a;
+}
+
+.rogue-offer.kind-risk .rogue-offer__rarity {
+  color: #a85a8a;
+}
+
+.rogue-offer__desc {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: #8b7355;
+}
+
+.rogue-result-list {
+  margin: 0;
+  padding-left: 1.2em;
+  line-height: 1.7;
+  font-weight: 600;
+}

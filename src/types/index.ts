@@ -53,3 +53,17 @@ export type LeaderboardRow = {
   attempt_count: number
   played_on?: string
 }
+
+/** 方格远征排行行：按层数 / 通关用时，不与经典最短用时混榜 */
+export type RogueLeaderboardRow = {
+  user_id: string
+  display_name: string
+  best_layers: number
+  best_ms: number
+  clear_count: number
+  attempt_count: number
+  won_best_ms: number
+  /** 平均清关层数（平均层数榜主列） */
+  avg_layers: number
+  played_on?: string
+}

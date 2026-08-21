@@ -112,6 +112,13 @@ code {
   max-width: 100%;
 }
 
+/* Link 包住 Button 时，a 的默认下划线会穿到按钮文字上 */
+a:has(button),
+a:has([class*='animal-button']) {
+  text-decoration: none;
+  color: inherit;
+}
+
 .auth-page {
   width: min(480px, calc(100% - 32px));
   margin: 48px auto;
