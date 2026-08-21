@@ -122,3 +122,36 @@ export async function fetchLeaderboard(params: {
   }
   return (data ?? []) as LeaderboardRow[]
 }
+
+/** 今日最佳榜第一名；展示名优先昵称，否则用户名 */
+export async function fetchTodayChampion(params: {
+  variantId: string
+  gridSize: number
+}): Promise<{ userId: string; name: string; bestMs: number } | null> {
+  if (!supabase) return null
+
+  const rows = await fetchLeaderboard({
+    ...params,
+    mode: 'today',
+    metric: 'best',
+  })
+  const first = rows[0]
+  if (!first) return null
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('display_name, username')
+    .eq('id', first.user_id)
+    .maybeSingle()
+
+  const nick = profile?.display_name?.trim() ?? ''
+  const username = profile?.username?.trim() ?? ''
+  const name = nick || username || first.display_name || '岛民'
+
+  return {
+    userId: first.user_id,
+    name,
+    bestMs: first.best_ms,
+  }
+}
+

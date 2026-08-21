@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Card, DatePicker, Loading, Select, Title } from 'animal-island-ui'
+import { Card, DatePicker, Select, Title } from 'animal-island-ui'
+import { IslandBusy } from '../components/IslandBusy'
 import { useAuth } from '../context/AuthContext'
 import { fetchAttemptsForDay, fetchDailyStats } from '../lib/attempts'
 import { formatDuration, localDay } from '../lib/format'
@@ -71,10 +72,7 @@ export function HistoryPage() {
       </div>
 
       {loading ? (
-        <div className="center-block">
-          <Loading />
-          <p>翻开岛民日记…</p>
-        </div>
+        <IslandBusy label="翻开岛民日记…" />
       ) : (
         <>
           <StatCards

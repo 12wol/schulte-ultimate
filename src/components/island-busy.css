@@ -1,0 +1,65 @@
+.island-busy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 140px;
+  padding: 12px 8px;
+}
+
+.island-busy__track {
+  width: min(280px, 88%);
+  height: 22px;
+  border-radius: 999px;
+  background: #f8f8f0;
+  border: 3px solid #e8dcc8;
+  box-shadow: inset 0 2px 4px rgba(114, 93, 66, 0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.island-busy__fill {
+  position: absolute;
+  inset: 2px;
+  border-radius: inherit;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #7ed9c8,
+    #7ed9c8 10px,
+    #4ec4b0 10px,
+    #4ec4b0 20px
+  );
+  background-size: 28.28px 28.28px;
+  animation: island-busy-slide 0.9s linear infinite;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.06);
+}
+
+.island-busy__label {
+  margin: 0;
+  font-family:
+    'Noto Sans SC',
+    Nunito,
+    sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  color: var(--animal-text-color, #794f27);
+}
+
+@keyframes island-busy-slide {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 28.28px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .island-busy__fill {
+    animation: none;
+    background-image: linear-gradient(90deg, #7ed9c8, #4ec4b0);
+  }
+}

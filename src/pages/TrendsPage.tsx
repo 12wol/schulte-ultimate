@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { subDays } from 'date-fns'
-import { Card, Loading, Select, Title } from 'animal-island-ui'
+import { Card, Select, Title } from 'animal-island-ui'
+import { IslandBusy } from '../components/IslandBusy'
 import { TrendChart } from '../components/TrendChart'
 import { useAuth } from '../context/AuthContext'
 import { fetchDailyStats, fetchRecentAttempts } from '../lib/attempts'
@@ -114,10 +115,7 @@ export function TrendsPage() {
 
       <Card color="purple" pattern="purple">
         {loading ? (
-          <div className="center-block">
-            <Loading />
-            <p>绘制趋势…</p>
-          </div>
+          <IslandBusy label="绘制趋势…" />
         ) : axis === 'day' ? (
           <TrendChart mode="day" stats={stats} />
         ) : (

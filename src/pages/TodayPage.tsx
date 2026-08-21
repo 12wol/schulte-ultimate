@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Card, Loading, Select, Title } from 'animal-island-ui'
+import { Card, Select, Title } from 'animal-island-ui'
+import { IslandBusy } from '../components/IslandBusy'
 import { StatCards } from '../components/StatCards'
 import { useAuth } from '../context/AuthContext'
 import { fetchAttemptsForDay, fetchDailyStats } from '../lib/attempts'
@@ -61,10 +62,7 @@ export function TodayPage() {
       </div>
 
       {loading ? (
-        <div className="center-block">
-          <Loading />
-          <p>统计今日数据…</p>
-        </div>
+        <IslandBusy label="统计今日数据…" />
       ) : (
         <>
           <StatCards

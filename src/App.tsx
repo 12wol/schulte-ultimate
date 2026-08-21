@@ -2,16 +2,9 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { Loading } from 'animal-island-ui'
 import { AppShell } from './components/AppShell'
+import { IrisTransitionProvider } from './components/iris/IrisTransition'
 import { useAuth } from './context/AuthContext'
-import { DevLogsPage } from './pages/DevLogsPage'
-import { HistoryPage } from './pages/HistoryPage'
-import { HomePage } from './pages/HomePage'
-import { LeaderboardPage } from './pages/LeaderboardPage'
 import { LoginPage } from './pages/LoginPage'
-import { PlayPage } from './pages/PlayPage'
-import { SettingsPage } from './pages/SettingsPage'
-import { TodayPage } from './pages/TodayPage'
-import { TrendsPage } from './pages/TrendsPage'
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { ready, user } = useAuth()
@@ -34,23 +27,15 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route
-        path="/"
+        path="/*"
         element={
           <RequireAuth>
-            <AppShell />
+            <IrisTransitionProvider>
+              <AppShell />
+            </IrisTransitionProvider>
           </RequireAuth>
         }
-      >
-        <Route index element={<HomePage />} />
-        <Route path="play" element={<PlayPage />} />
-        <Route path="today" element={<TodayPage />} />
-        <Route path="trends" element={<TrendsPage />} />
-        <Route path="history" element={<HistoryPage />} />
-        <Route path="leaderboard" element={<LeaderboardPage />} />
-        <Route path="settings" element={<SettingsPage />} />
-        <Route path="dev-logs" element={<DevLogsPage />} />
-      </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      />
     </Routes>
   )
 }

@@ -13,6 +13,8 @@ dist-ssr
 *.local
 schulte-tmp
 .netlify
+scripts/netlify-deploy-key.pub
+scripts/gh-deploy-key.json
 
 # Editor directories and files
 .vscode/*

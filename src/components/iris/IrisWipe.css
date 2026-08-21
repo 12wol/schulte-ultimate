@@ -1,0 +1,124 @@
+@property --iris-hole {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 140vmax;
+}
+
+.iris-wipe {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.iris-wipe.is-live {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.iris-wipe__veil {
+  position: absolute;
+  inset: 0;
+  /* 与主按钮「进入」同系浅奶油色 */
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 251, 231, 0.95), transparent 46%),
+    linear-gradient(165deg, #fffdf6 0%, #f8f8f0 42%, #f0e8d8 100%);
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 50%,
+    transparent var(--iris-hole),
+    #000 calc(var(--iris-hole) + 1.5px)
+  );
+  mask-image: radial-gradient(
+    circle at 50% 50%,
+    transparent var(--iris-hole),
+    #000 calc(var(--iris-hole) + 1.5px)
+  );
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.iris-wipe__ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--iris-hole) * 2);
+  height: calc(var(--iris-hole) * 2);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 2px rgba(189, 174, 160, 0.55),
+    0 0 24px 4px rgba(121, 79, 39, 0.12);
+  pointer-events: none;
+}
+
+.iris-wipe.is-closing .iris-wipe__veil {
+  animation: iris-hole-close 0.62s cubic-bezier(0.65, 0.05, 0.36, 1) forwards;
+}
+
+.iris-wipe.is-closing .iris-wipe__ring {
+  animation: iris-ring-close 0.62s cubic-bezier(0.65, 0.05, 0.36, 1) forwards;
+}
+
+.iris-wipe.is-opening .iris-wipe__veil {
+  animation: iris-hole-open 0.68s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.iris-wipe.is-opening .iris-wipe__ring {
+  animation: iris-ring-open 0.68s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes iris-hole-close {
+  from {
+    --iris-hole: 70vmax;
+  }
+  to {
+    --iris-hole: 7px;
+  }
+}
+
+@keyframes iris-hole-open {
+  from {
+    --iris-hole: 7px;
+  }
+  to {
+    --iris-hole: 70vmax;
+  }
+}
+
+@keyframes iris-ring-close {
+  from {
+    width: 140vmax;
+    height: 140vmax;
+    opacity: 0.85;
+  }
+  to {
+    width: 14px;
+    height: 14px;
+    opacity: 1;
+  }
+}
+
+@keyframes iris-ring-open {
+  from {
+    width: 14px;
+    height: 14px;
+    opacity: 1;
+  }
+  to {
+    width: 140vmax;
+    height: 140vmax;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iris-wipe.is-closing .iris-wipe__veil,
+  .iris-wipe.is-closing .iris-wipe__ring,
+  .iris-wipe.is-opening .iris-wipe__veil,
+  .iris-wipe.is-opening .iris-wipe__ring {
+    animation-duration: 0.01ms !important;
+  }
+}

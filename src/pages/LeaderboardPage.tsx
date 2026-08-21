@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Card, Loading, Select, Table, Tag, Title } from 'animal-island-ui'
+import { Card, Select, Table, Tag, Title } from 'animal-island-ui'
+import { IslandBusy } from '../components/IslandBusy'
 import { fetchLeaderboard } from '../lib/attempts'
 import { formatDuration } from '../lib/format'
 import { GRID_SIZE_OPTIONS } from '../variants/registry'
@@ -75,7 +76,7 @@ export function LeaderboardPage() {
         : '最佳榜看爆发力，也可切换平均 / 最慢榜。'
 
   return (
-    <div className="page">
+    <div className="page leaderboard-page">
       <Title size="middle" color="app-red">
         排行榜
       </Title>
@@ -115,37 +116,42 @@ export function LeaderboardPage() {
         </Tag>
       )}
 
-      <Card color={metric === 'worst' ? 'app-teal' : 'app-orange'} pattern={metric === 'worst' ? 'app-teal' : 'app-orange'}>
+      <Card
+        color={metric === 'worst' ? 'app-teal' : 'app-orange'}
+        pattern={metric === 'worst' ? 'app-teal' : 'app-orange'}
+        className="leaderboard-card"
+      >
         {loading ? (
-          <div className="center-block">
-            <Loading />
-            <p>统计岛民成绩…</p>
-          </div>
+          <IslandBusy label="统计岛民成绩…" />
         ) : (
-          <Table
-            rowKey="key"
-            emptyText="还没有人上榜，去做第一名吧！"
-            columns={[
-              { title: '名次', dataIndex: 'rank', width: 64 },
-              {
-                title: '岛民',
-                dataIndex: 'name',
-                render: (_v, record) => (
-                  <span>
-                    {String(record.name)}{' '}
-                    {record.me ? <Tag color="app-green">我</Tag> : null}
-                    {metric === 'worst' && record.rank === 1 ? (
-                      <Tag color="app-teal">{mode === 'today' ? '今日最慢' : '最慢王'}</Tag>
-                    ) : null}
-                  </span>
-                ),
-              },
-              { title: scoreLabel, dataIndex: 'score' },
-              { title: secondary.title, dataIndex: secondary.key },
-              { title: '局数', dataIndex: 'count', width: 72 },
-            ]}
-            dataSource={dataSource}
-          />
+          <div className="leaderboard-table-wrap">
+            <Table
+              rowKey="key"
+              emptyText="还没有人上榜，去做第一名吧！"
+              columns={[
+                { title: '名次', dataIndex: 'rank', width: 64 },
+                {
+                  title: '岛民',
+                  dataIndex: 'name',
+                  render: (_v, record) => (
+                    <span>
+                      {String(record.name)}{' '}
+                      {record.me ? <Tag color="app-green">我</Tag> : null}
+                      {metric === 'worst' && record.rank === 1 ? (
+                        <Tag color="app-teal">
+                          {mode === 'today' ? '今日最慢' : '最慢王'}
+                        </Tag>
+                      ) : null}
+                    </span>
+                  ),
+                },
+                { title: scoreLabel, dataIndex: 'score' },
+                { title: secondary.title, dataIndex: secondary.key },
+                { title: '局数', dataIndex: 'count', width: 72 },
+              ]}
+              dataSource={dataSource}
+            />
+          </div>
         )}
       </Card>
     </div>

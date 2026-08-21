@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Button, Tag } from 'animal-island-ui'
+import { useIris } from '../../components/iris/IrisTransition'
 import { formatDuration } from '../../lib/format'
 import './schulte.css'
 
@@ -44,6 +45,7 @@ type Props = {
 type Phase = 'idle' | 'running' | 'done'
 
 export function SchulteBoard({ gridSize, onFinished }: Props) {
+  const { expandThrough } = useIris()
   const [phase, setPhase] = useState<Phase>('idle')
   const [cells, setCells] = useState<number[]>(() =>
     shuffle(Array.from({ length: gridSize * gridSize }, (_, i) => i + 1)),
@@ -105,9 +107,11 @@ export function SchulteBoard({ gridSize, onFinished }: Props) {
   }, [phase])
 
   const start = () => {
-    resetBoard()
-    startedAt.current = performance.now()
-    setPhase('running')
+    void expandThrough(() => {
+      resetBoard()
+      startedAt.current = performance.now()
+      setPhase('running')
+    })
   }
 
   const onCell = (n: number) => {
